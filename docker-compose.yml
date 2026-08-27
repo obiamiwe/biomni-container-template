@@ -1,0 +1,43 @@
+services:
+  biomni:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: biomni
+    restart: unless-stopped
+    expose:
+      - "5001"
+    env_file:
+      - ./env/biomni.env
+    volumes:
+      - ./app:/app
+      - /data/biomni:/data
+    working_dir: /app
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    container_name: oauth2-proxy
+    expose:
+      - "4180"
+    env_file:
+      - ./env/oauth2-proxy.env
+    command:
+      - --config=/etc/oauth2-proxy/oauth2-proxy.cfg
+    volumes:
+      - ./oauth2-proxy.cfg:/etc/oauth2-proxy/oauth2-proxy.cfg:ro
+    depends_on:
+      - biomni
+    restart: unless-stopped
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+      - ./certs:/certs:ro
+    depends_on:
+      - oauth2-proxy
+    restart: unless-stopped

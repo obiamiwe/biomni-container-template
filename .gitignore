@@ -1,0 +1,14 @@
+# Real environment files — never commit these
+env/biomni.env
+env/oauth2-proxy.env
+.env
+
+# Caddy runtime state
+caddy-data/
+caddy-config/
+
+# Certs
+certs/
+
+# OS/editor cruft
+.DS_Store
