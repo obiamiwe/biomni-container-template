@@ -1,0 +1,9 @@
+:443 {
+        tls /certs/active/fullchain.pem /certs/private/privkey.key
+        reverse_proxy oauth2-proxy:4180
+        encode gzip
+}
+:8080 {
+        reverse_proxy oauth2-proxy:4180
+        encode gzip
+}
